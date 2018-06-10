@@ -1,5 +1,7 @@
 # Moneybox Money Withdrawal
 
+[![Build status](https://ci.appveyor.com/api/projects/status/sukqkfusec7um6rg?svg=true)](https://ci.appveyor.com/project/TaherehFarrokhi/moneybox-withdrawal)
+
 The solution contains a .NET core library (Moneybox.App) which is structured into the following 3 folders:
 
 * Domain - this contains the domain models for a user and an account, and a notification service.
