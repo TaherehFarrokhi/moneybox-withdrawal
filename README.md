@@ -12,6 +12,15 @@ The task is to implement a money withdrawal in the WithdrawMoney.Execute(...) me
 
 As part of this process however, you should look to refactor some of the code in the TransferMoney.Execute(...) method into the domain models, and make these models less susceptible to misuse. We're looking to make our domain models rich in behaviour and much more than just plain old objects, however we don't want any data persistance operations (i.e. data access repositories) to bleed into our domain. This should simplify the task of implementing WidthdrawMoney.Execute(...).
 
+## The refactoring
+
+The refactring has been done with creating all the boundary tests and then implementing withdraw. In the next step I've extracted the logic two legs for each transaction as a withdraw and deposit.
+
+Extension points: 
+* test for deposit needs to be done to have full coverage of the deposit transaction
+* use unit of work pattern between different repositories to make sure the transfer is transaction proof.
+
+
 ## Guidlines
 
 * You should spend no more than 1 hour on this task, although there is no time limit

@@ -1,23 +1,23 @@
-﻿using Moneybox.App.DataAccess;
-using Moneybox.App.Domain.Services;
-using System;
+﻿using System;
+using Moneybox.App.Domain;
+using Moneybox.App.Domain.Commands;
 
 namespace Moneybox.App.Features
 {
     public class WithdrawMoney
     {
-        private IAccountRepository accountRepository;
-        private INotificationService notificationService;
+        private readonly IWithdrawCommand _withdrawCommand;
 
-        public WithdrawMoney(IAccountRepository accountRepository, INotificationService notificationService)
+        public WithdrawMoney(IWithdrawCommand withdrawCommand)
         {
-            this.accountRepository = accountRepository;
-            this.notificationService = notificationService;
+            _withdrawCommand = withdrawCommand ?? throw new ArgumentNullException(nameof(withdrawCommand));
         }
 
-        public void Execute(Guid fromAccountId, decimal amount)
+        public void Execute(Guid accountId, decimal amount)
         {
-            // TODO:
+            if (amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount));
+
+            _withdrawCommand.Execute(accountId, amount);
         }
     }
 }

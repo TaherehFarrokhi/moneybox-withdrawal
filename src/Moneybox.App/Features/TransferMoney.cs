@@ -1,55 +1,25 @@
-﻿using Moneybox.App.DataAccess;
-using Moneybox.App.Domain.Services;
-using System;
+﻿using System;
+using Moneybox.App.Domain.Commands;
 
 namespace Moneybox.App.Features
 {
     public class TransferMoney
     {
-        private IAccountRepository accountRepository;
-        private INotificationService notificationService;
+        private readonly IWithdrawCommand _withdrawCommand;
+        private readonly IDepositCommand _depositCommand;
 
-        public TransferMoney(IAccountRepository accountRepository, INotificationService notificationService)
+        public TransferMoney(IWithdrawCommand withdrawCommand, IDepositCommand depositCommand)
         {
-            this.accountRepository = accountRepository;
-            this.notificationService = notificationService;
+            _withdrawCommand = withdrawCommand ?? throw new ArgumentNullException(nameof(withdrawCommand));
+            _depositCommand = depositCommand ?? throw new ArgumentNullException(nameof(depositCommand));
         }
 
         public void Execute(Guid fromAccountId, Guid toAccountId, decimal amount)
         {
-            var from = this.accountRepository.GetAccountById(fromAccountId);
-            var to = this.accountRepository.GetAccountById(toAccountId);
+            if (amount <= 0) throw new ArgumentOutOfRangeException(nameof(amount));
 
-            var fromBalance = from.Balance - amount;
-            if (fromBalance < 0m)
-            {
-                throw new InvalidOperationException("Insufficient funds to make transfer");
-            }
-
-            if (fromBalance < 500m)
-            {
-                this.notificationService.NotifyFundsLow(from.User.Email);
-            }
-
-            var paidIn = to.PaidIn + amount;
-            if (paidIn > Account.PayInLimit)
-            {
-                throw new InvalidOperationException("Account pay in limit reached");
-            }
-
-            if (Account.PayInLimit - paidIn < 500m)
-            {
-                this.notificationService.NotifyApproachingPayInLimit(to.User.Email);
-            }
-
-            from.Balance = from.Balance - amount;
-            from.Withdrawn = from.Withdrawn - amount;
-
-            to.Balance = to.Balance + amount;
-            to.PaidIn = to.PaidIn + amount;
-
-            this.accountRepository.Update(from);
-            this.accountRepository.Update(to);
+            _withdrawCommand.Execute(fromAccountId, amount);
+            _depositCommand.Execute(toAccountId, amount);
         }
     }
 }
